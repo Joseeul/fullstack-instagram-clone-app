@@ -1,6 +1,7 @@
 import { Redirect, Tabs } from "expo-router";
-import React from "react";
+import React, { useEffect, useState } from "react";
 
+import { getUserSession } from "@/lib/appwrite";
 import {
   Blend,
   CircleUserRound,
@@ -10,9 +11,25 @@ import {
 } from "lucide-react-native";
 
 const TabLayout = () => {
-  const isAuth = false;
+  const [isAuth, setIsAuth] = useState(false);
+  const [isCheckingSession, setIsCheckingSession] = useState(true);
 
-  if (!isAuth) return <Redirect href={"/(auth)/signIn"} />;
+  useEffect(() => {
+    const checkSession = async () => {
+      const result = await getUserSession();
+      setIsAuth(result);
+      setIsCheckingSession(false);
+    };
+    checkSession();
+  }, []);
+
+  if (isCheckingSession) {
+    return null;
+  }
+
+  if (!isAuth) {
+    return <Redirect href={"/(auth)/signIn"} />;
+  }
 
   return (
     <Tabs>
