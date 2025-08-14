@@ -17,6 +17,7 @@ export default function RootLayout() {
     "Ig-Regular": require("../assets/fonts/InstagramSans-Regular.ttf"),
     "Ig-Medium": require("../assets/fonts/InstagramSans-Medium.ttf"),
     "Ig-Bold": require("../assets/fonts/InstagramSans-Bold.ttf"),
+    "Lobster": require("../assets/fonts/Lobster-Regular.ttf"),
   });
 
   useEffect(() => {

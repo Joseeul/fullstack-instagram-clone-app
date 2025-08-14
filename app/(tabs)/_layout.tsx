@@ -1,4 +1,4 @@
-import { Tabs } from "expo-router";
+import { Redirect, Tabs } from "expo-router";
 import React from "react";
 
 import {
@@ -10,6 +10,10 @@ import {
 } from "lucide-react-native";
 
 const TabLayout = () => {
+  const isAuth = false;
+
+  if (!isAuth) return <Redirect href={"/(auth)/signIn"} />;
+
   return (
     <Tabs>
       <Tabs.Screen
