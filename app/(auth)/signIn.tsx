@@ -1,8 +1,9 @@
-import CustomButton from "@/components/CustomButton";
-import CustomInputField from "@/components/CustomInputField";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import { SafeAreaView, Text, TouchableOpacity, View } from "react-native";
+
+import { Button, ButtonText } from "@/components/ui/button";
+import { Input, InputField } from "@/components/ui/input";
 
 const signIn = () => {
   const router = useRouter();
@@ -14,52 +15,73 @@ const signIn = () => {
     <SafeAreaView className="bg-white h-full w-full">
       <View className="flex-1 justify-center p-5">
         <Text
-          className="text-6xl text-center mb-12"
-          style={{ fontFamily: "Lobster" }}
+          className="text-6xl text-center mb-10"
+          style={{ fontFamily: "Instagram-font" }}
         >
           Instagram
         </Text>
-        <CustomInputField
-          label="Email"
-          className="mb-4 w-full"
-          textClassName="text-gray-500"
-          textInputClassName="border-2 border-gray-200 rounded-xl px-3 py-2"
-          fontFamily="Ig-Regular"
-          value={email}
-          onChangeText={(text) => setEmail(text)}
-        />
-        <CustomInputField
-          label="Password"
-          className="mb-4 w-full"
-          textClassName="text-gray-500"
-          textInputClassName="border-2 border-gray-200 rounded-xl px-3 py-2"
-          fontFamily="Ig-Regular"
-          value={password}
-          onChangeText={(text) => setPassword(text)}
-        />
-        <CustomButton
-          label="Sign In"
-          className="w-full mb-5"
-          onPress={() => {}}
-          buttonClassname="bg-blue-600 p-3 rounded-full"
-          textClassName="text-white text-center"
-          fontFamily="Ig-Regular"
-        />
-        <TouchableOpacity>
-          <Text className="text-center" style={{ fontFamily: "Ig-Bold" }}>
+        <Input
+          variant="outline"
+          size="xl"
+          isDisabled={false}
+          isInvalid={false}
+          isReadOnly={false}
+          className="mb-4"
+          style={{ backgroundColor: "#FAFAFA" }}
+        >
+          <InputField
+            placeholder="Email"
+            style={{ fontFamily: "Ig-Regular" }}
+            onChangeText={(text) => setEmail(text)}
+          />
+        </Input>
+        <Input
+          variant="outline"
+          size="xl"
+          isDisabled={false}
+          isInvalid={false}
+          isReadOnly={false}
+          className="mb-4"
+          style={{ backgroundColor: "#FAFAFA" }}
+        >
+          <InputField
+            placeholder="Password"
+            secureTextEntry={true}
+            style={{ fontFamily: "Ig-Regular" }}
+            onChangeText={(text) => setPassword(text)}
+          />
+        </Input>
+        <TouchableOpacity activeOpacity={0.5}>
+          <Text
+            className="text-right mb-4"
+            style={{ fontFamily: "Ig-Medium", color: "#3797EF" }}
+          >
             Forgot password?
           </Text>
         </TouchableOpacity>
+        <Button
+          size="lg"
+          variant="solid"
+          action="primary"
+          style={{ backgroundColor: "#3797EF", borderRadius: 100 }}
+          className="mb-4"
+        >
+          <ButtonText style={{ fontFamily: "Ig-Bold" }}>Sign In</ButtonText>
+        </Button>
       </View>
       <View className="absolute bottom-0 left-0 right-0 p-5 mb-10">
-        <CustomButton
-          label="Create new account"
-          className="w-full"
+        <Button
+          size="lg"
+          variant="outline"
+          action="primary"
+          style={{ backgroundColor: "#FFFFFF", borderRadius: 100, borderColor: '#3797EF' }}
+          className="mb-4"
           onPress={() => router.push("/(auth)/signUp")}
-          buttonClassname="w-full p-3 rounded-full border border-blue-600"
-          textClassName="text-blue-600 text-center"
-          fontFamily="Ig-Regular"
-        />
+        >
+          <ButtonText style={{ fontFamily: "Ig-Bold", color: '#3797EF' }}>
+            Create an account
+          </ButtonText>
+        </Button>
       </View>
     </SafeAreaView>
   );

@@ -1,4 +1,6 @@
 import { useFonts } from "expo-font";
+import "@/global.css";
+import { GluestackUIProvider } from "@/components/ui/gluestack-ui-provider";
 import { Stack } from "expo-router";
 // import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
@@ -17,7 +19,7 @@ export default function RootLayout() {
     "Ig-Regular": require("../assets/fonts/InstagramSans-Regular.ttf"),
     "Ig-Medium": require("../assets/fonts/InstagramSans-Medium.ttf"),
     "Ig-Bold": require("../assets/fonts/InstagramSans-Bold.ttf"),
-    "Lobster": require("../assets/fonts/Lobster-Regular.ttf"),
+    "Instagram-font": require("../assets/fonts/Instagram-font.otf"),
   });
 
   useEffect(() => {
@@ -31,9 +33,9 @@ export default function RootLayout() {
   }
 
   return (
-    <Stack>
-      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-      <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-    </Stack>
+    <GluestackUIProvider mode="light"><Stack>
+        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+      </Stack></GluestackUIProvider>
   );
 }
