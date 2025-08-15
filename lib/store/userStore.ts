@@ -5,7 +5,7 @@ export const saveUserStore = async (key: string, value: string) => {
   try {
     await SecureStore.setItemAsync(key, value);
   } catch (error) {
-    console.error("error input data saveUserStore " + error);
+    console.error("Error input data fun saveUserStore " + error);
     return null;
   }
 };
@@ -15,7 +15,7 @@ export const deleteUserStore = async (key: string) => {
   try {
     await SecureStore.deleteItemAsync(key);
   } catch (error) {
-    console.error("error delete data deleteUserStore " + error);
+    console.error("Error delete data fun deleteUserStore " + error);
     return null;
   }
 };

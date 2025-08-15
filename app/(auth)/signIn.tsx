@@ -1,11 +1,17 @@
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
-import { SafeAreaView, Text, TouchableOpacity, View } from "react-native";
+import {
+  Alert,
+  SafeAreaView,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 
 import { Button, ButtonText } from "@/components/ui/button";
 import { Input, InputField } from "@/components/ui/input";
-import { loginUser } from "@/lib/appwrite";
 import { UserInputLogin } from "@/lib/models/UserModel";
+import { loginUser } from "@/lib/api/auth";
 
 const signIn = () => {
   const router = useRouter();
@@ -16,6 +22,29 @@ const signIn = () => {
   });
 
   const [isLoading, setIsLoading] = useState(false);
+
+  const handleSubmit = async () => {
+    if (!form.email.trim() || !form.password.trim()) {
+      Alert.alert("Failed to submit", "Field cannot be empty!", [
+        { text: "OK" },
+      ]);
+      return;
+    }
+
+    setIsLoading(true);
+    const result = await loginUser(form);
+
+    if (!result) {
+      Alert.alert(
+        "Failed to login",
+        "There was an error while processing your request.",
+        [{ text: "OK" }]
+      );
+      return;
+    }
+
+    router.replace("/");
+  };
 
   return (
     <SafeAreaView className="bg-white h-full w-full">
@@ -76,15 +105,7 @@ const signIn = () => {
           action="primary"
           style={{ backgroundColor: "#3797EF", borderRadius: 100 }}
           className="mb-4"
-          onPress={async () => {
-            setIsLoading(true);
-            const result = await loginUser(form);
-            if (!result) {
-              console.log("error login");
-              setIsLoading(false);
-            }
-            router.replace("/");
-          }}
+          onPress={handleSubmit}
         >
           <ButtonText style={{ fontFamily: "Ig-Bold" }}>Sign In</ButtonText>
         </Button>

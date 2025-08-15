@@ -1,5 +1,5 @@
 import { Button, ButtonText } from "@/components/ui/button";
-import { logoutUser } from "@/lib/appwrite";
+import { logoutUser } from "@/lib/api/auth";
 import { router } from "expo-router";
 import { SafeAreaView, Text } from "react-native";
 
