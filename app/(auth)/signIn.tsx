@@ -79,10 +79,11 @@ const signIn = () => {
           onPress={async () => {
             setIsLoading(true);
             const result = await loginUser(form);
-            if (result) {
-              router.replace("/");
+            if (!result) {
+              console.log("error login");
+              setIsLoading(false);
             }
-            setIsLoading(false);
+            router.replace("/");
           }}
         >
           <ButtonText style={{ fontFamily: "Ig-Bold" }}>Sign In</ButtonText>

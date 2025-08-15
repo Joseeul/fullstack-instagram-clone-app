@@ -98,10 +98,11 @@ const signUp = () => {
           onPress={async () => {
             setIsLoading(true);
             const result = await registerUser(form);
-            if (result) {
-              router.replace("/");
+            if (!result) {
+              console.log("error registering");
+              setIsLoading(false);
             }
-            setIsLoading(false);
+            router.replace("/");
           }}
         >
           {isLoading ? <ButtonSpinner color={"#FFFFFF"} /> : ""}

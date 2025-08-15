@@ -1,5 +1,6 @@
 import { Account, Avatars, Client, Databases, ID } from "react-native-appwrite";
 import { UserInputLogin, UserInputRegister } from "./models/UserModel";
+import { deleteUserStore, saveUserStore } from "./store/userStore";
 
 interface AppwriteConfig {
   projectId: string;
@@ -48,17 +49,14 @@ export const registerUser = async ({
   const loggedUser = await loginUser({ email, password });
 
   if (!loggedUser) {
-    console.error("Error when login in user");
+    try {
+      const user = await account.get();
+      await account.deleteIdentity(user.$id);
+    } catch (error) {
+      console.error("error when deleting account at login ", error);
+    }
+    console.error("Error when login");
     return;
-  }
-
-  // ambil user_id dari auth
-  let user;
-  try {
-    user = await account.get();
-  } catch (error) {
-    console.error(error);
-    return null;
   }
 
   // input data ke document user
@@ -68,7 +66,7 @@ export const registerUser = async ({
       appwriteConfig.userCollectionId,
       ID.unique(),
       {
-        user_id: user.$id,
+        user_id: loggedUser.userId,
         user_name,
         email,
         avatar_url,
@@ -88,6 +86,13 @@ export const loginUser = async ({ email, password }: UserInputLogin) => {
       email,
       password
     );
+
+    // masukkan value user_id kedalam function saveUserStore
+    await saveUserStore("user_id", loggedUser.userId);
+
+    // massukan value expire session kedalam function saveUserStore
+    await saveUserStore("session_expire_date", loggedUser.expire);
+
     return loggedUser;
   } catch (error) {
     console.error(error);
@@ -95,10 +100,12 @@ export const loginUser = async ({ email, password }: UserInputLogin) => {
   }
 };
 
-// functioin untuk mengambil session login
-export const getUserSession = async () => {
+// function untuk logout
+export const logoutUser = async () => {
   try {
-    const user = await account.get();
+    await account.deleteSession("current");
+    await deleteUserStore("user_id");
+    await deleteUserStore("session_expire_date");
     return true;
   } catch (error) {
     console.error(error);

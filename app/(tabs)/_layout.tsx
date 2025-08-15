@@ -1,7 +1,7 @@
-import { Redirect, Tabs } from "expo-router";
+import { Tabs, useRouter } from "expo-router";
+import * as SecureStore from "expo-secure-store";
 import React, { useEffect, useState } from "react";
 
-import { getUserSession } from "@/lib/appwrite";
 import {
   Blend,
   CircleUserRound,
@@ -11,13 +11,28 @@ import {
 } from "lucide-react-native";
 
 const TabLayout = () => {
-  const [isAuth, setIsAuth] = useState(false);
   const [isCheckingSession, setIsCheckingSession] = useState(true);
+
+  const router = useRouter();
 
   useEffect(() => {
     const checkSession = async () => {
-      const result = await getUserSession();
-      setIsAuth(result);
+      const getSessionDate = await SecureStore.getItemAsync(
+        "session_expire_date"
+      );
+
+      if (getSessionDate === null) {
+        router.replace("/(auth)/signIn");
+        return;
+      } else {
+        const sessionDate = new Date(getSessionDate);
+        const dateNow = new Date();
+
+        if (dateNow > sessionDate) {
+          router.replace("/(auth)/signIn");
+        }
+      }
+
       setIsCheckingSession(false);
     };
     checkSession();
@@ -25,10 +40,6 @@ const TabLayout = () => {
 
   if (isCheckingSession) {
     return null;
-  }
-
-  if (!isAuth) {
-    return <Redirect href={"/(auth)/signIn"} />;
   }
 
   return (
