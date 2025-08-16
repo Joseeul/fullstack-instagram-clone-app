@@ -20,4 +20,5 @@ export interface User {
   total_post: number;
   total_followers: number;
   total_following: number;
+  bio: string;
 }

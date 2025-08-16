@@ -1,7 +1,6 @@
 import { Tabs, useRouter } from "expo-router";
 import * as SecureStore from "expo-secure-store";
 import React, { useEffect, useState } from "react";
-
 import {
   Blend,
   CircleUserRound,
