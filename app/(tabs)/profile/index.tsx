@@ -64,7 +64,7 @@ const Index = () => {
               <SquarePlus />
               <TouchableOpacity
                 activeOpacity={0.5}
-                onPress={() => router.push('/(tabs)/profile/menuSetting')}
+                onPress={() => router.push("/(tabs)/profile/menuSetting")}
               >
                 <Menu />
               </TouchableOpacity>
@@ -109,7 +109,7 @@ const Index = () => {
             <Text style={{ fontFamily: "Ig-Regular" }}>{user?.bio}</Text>
             <View className="flex-row w-full space-x-2 gap-4 mt-4">
               <Button
-                className="flex-1 bg-gray-300 rounded-lg"
+                className="flex-1 rounded-lg"
                 size="md"
                 variant="solid"
                 action="primary"
@@ -119,14 +119,13 @@ const Index = () => {
                   className="text-lg"
                   style={{
                     fontFamily: "Ig-Bold",
-                    color: "#000000",
                   }}
                 >
                   Edit Profile
                 </ButtonText>
               </Button>
               <Button
-                className="flex-1 bg-gray-300 rounded-lg"
+                className="flex-1 rounded-lg"
                 size="md"
                 variant="solid"
                 action="primary"
@@ -135,7 +134,6 @@ const Index = () => {
                   className="text-lg"
                   style={{
                     fontFamily: "Ig-Bold",
-                    color: "#000000",
                   }}
                 >
                   Share Profile

@@ -18,13 +18,6 @@ const SearchLayout = () => {
           headerShown: false,
         }}
       />
-      <Stack.Screen
-        name="userDetail"
-        options={{
-          title: "Search",
-          headerShown: false,
-        }}
-      />
     </Stack>
   );
 };

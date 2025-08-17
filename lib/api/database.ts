@@ -29,14 +29,14 @@ export const fetchUserData = async (user_id: string) => {
         return getDocument;
       } catch (error) {
         console.error(error);
-        return null;
+        return;
       }
     } else {
-      return null;
+      return;
     }
   } catch (error) {
     console.error(error);
-    return null;
+    return;
   }
 };
 
@@ -53,6 +53,6 @@ export const searchUser = async (user_name: string) => {
     return getListDocument.documents;
   } catch (error) {
     console.error(error);
-    return null;
+    return;
   }
 };

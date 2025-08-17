@@ -1,3 +1,4 @@
+import ErrorMessage from "@/components/ErrorMessage";
 import { Button, ButtonSpinner, ButtonText } from "@/components/ui/button";
 import { Input, InputField } from "@/components/ui/input";
 import { loginUser } from "@/lib/api/auth";
@@ -19,8 +20,9 @@ const signIn = () => {
     email: "",
     password: "",
   });
-
   const [isLoading, setIsLoading] = useState(false);
+  const [showError, setShowError] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   const handleSubmit = async () => {
     if (!form.email.trim() || !form.password.trim()) {
@@ -42,7 +44,7 @@ const signIn = () => {
       setIsLoading(false);
       return;
     }
-
+    setShowError(false);
     router.replace("/");
   };
 
@@ -129,6 +131,7 @@ const signIn = () => {
           </ButtonText>
         </Button>
       </View>
+      {showError ? <ErrorMessage message={errorMessage} /> : ""}
     </SafeAreaView>
   );
 };
