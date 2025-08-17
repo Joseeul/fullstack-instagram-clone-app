@@ -15,7 +15,7 @@ const Index = () => {
         >
           <View className="border flex-row items-center gap-4 border-gray-400 rounded-lg p-2">
             <Search color={"#9ca3af"} size={20} />
-            <Text className="text-gray-400">Search...</Text>
+            <Text className="text-gray-400" style={{fontFamily: 'Ig-Regular'}}>Search...</Text>
           </View>
         </TouchableOpacity>
         <Text>all feed here</Text>
