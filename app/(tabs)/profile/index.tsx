@@ -62,7 +62,10 @@ const Index = () => {
             <View className="flex-row gap-5">
               <Blend />
               <SquarePlus />
-              <TouchableOpacity activeOpacity={0.5}>
+              <TouchableOpacity
+                activeOpacity={0.5}
+                onPress={() => router.push('/(tabs)/profile/menuSetting')}
+              >
                 <Menu />
               </TouchableOpacity>
             </View>

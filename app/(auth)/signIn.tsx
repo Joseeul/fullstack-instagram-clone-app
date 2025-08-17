@@ -39,6 +39,7 @@ const signIn = () => {
         "There was an error while processing your request.",
         [{ text: "OK" }]
       );
+      setIsLoading(false);
       return;
     }
 

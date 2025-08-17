@@ -17,6 +17,12 @@ const ProfileLayout = () => {
           title: "Edit Profile",
         }}
       />
+      <Stack.Screen
+        name="menuSetting"
+        options={{
+          title: "Settings and activity",
+        }}
+      />
     </Stack>
   );
 };
