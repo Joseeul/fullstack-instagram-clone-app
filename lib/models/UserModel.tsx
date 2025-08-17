@@ -22,3 +22,10 @@ export interface User {
   total_following: number;
   bio: string;
 }
+
+//interface untuk hasil search user
+export interface UserSearch {
+  user_id: string;
+  user_name: string;
+  avatar_url: string;
+}

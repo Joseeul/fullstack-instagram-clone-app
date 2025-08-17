@@ -1,3 +1,7 @@
+import { Button, ButtonSpinner, ButtonText } from "@/components/ui/button";
+import { Input, InputField } from "@/components/ui/input";
+import { loginUser } from "@/lib/api/auth";
+import { UserInputLogin } from "@/lib/models/UserModel";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
@@ -7,11 +11,6 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-
-import { Button, ButtonText } from "@/components/ui/button";
-import { Input, InputField } from "@/components/ui/input";
-import { UserInputLogin } from "@/lib/models/UserModel";
-import { loginUser } from "@/lib/api/auth";
 
 const signIn = () => {
   const router = useRouter();
@@ -107,6 +106,7 @@ const signIn = () => {
           className="mb-4"
           onPress={handleSubmit}
         >
+          {isLoading ? <ButtonSpinner color={"#FFFFFF"} /> : ""}
           <ButtonText style={{ fontFamily: "Ig-Bold" }}>Sign In</ButtonText>
         </Button>
       </View>

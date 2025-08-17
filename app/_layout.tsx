@@ -1,6 +1,6 @@
-import { useFonts } from "expo-font";
-import "@/global.css";
 import { GluestackUIProvider } from "@/components/ui/gluestack-ui-provider";
+import "@/global.css";
+import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
 // import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
@@ -33,9 +33,11 @@ export default function RootLayout() {
   }
 
   return (
-    <GluestackUIProvider mode="light"><Stack>
+    <GluestackUIProvider mode="light">
+      <Stack>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-      </Stack></GluestackUIProvider>
+      </Stack>
+    </GluestackUIProvider>
   );
 }

@@ -3,6 +3,7 @@ import { appwriteConfig, client } from "../appwrite";
 
 const databases = new Databases(client);
 
+// untuk fetch data ke profile
 export const fetchUserData = async (user_id: string) => {
   // mengambil list documents
   try {
@@ -33,6 +34,23 @@ export const fetchUserData = async (user_id: string) => {
     } else {
       return null;
     }
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+};
+
+// untuk search user
+export const searchUser = async (user_name: string) => {
+  // ambil list document
+  try {
+    const getListDocument = await databases.listDocuments(
+      appwriteConfig.databaseId,
+      appwriteConfig.userCollectionId,
+      [Query.contains("user_name", user_name)]
+    );
+
+    return getListDocument.documents;
   } catch (error) {
     console.error(error);
     return null;
