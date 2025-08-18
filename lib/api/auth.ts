@@ -106,11 +106,11 @@ export const checkUsername = async (user_name: string) => {
     );
 
     if (result.total != 0) {
-      return false;
+      return;
     }
   } catch (error) {
     console.error(error);
-    return false;
+    return;
   }
 
   return true;

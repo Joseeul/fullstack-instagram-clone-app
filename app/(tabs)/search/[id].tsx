@@ -1,10 +1,11 @@
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { Button, ButtonText } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
-import { fetchUserData } from "@/lib/api/database";
+import { fetchUserData, followUser } from "@/lib/api/database";
 import { userMapper } from "@/lib/mapping/userMapper";
 import { User } from "@/lib/models/UserModel";
-import { router, useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams } from "expo-router";
+import * as SecureStore from "expo-secure-store";
 import { Ellipsis } from "lucide-react-native";
 import React, { useEffect, useState } from "react";
 import { Alert, SafeAreaView, Text, View } from "react-native";
@@ -34,6 +35,33 @@ const UserProfile = () => {
     };
     fetchUser();
   }, []);
+
+  const handleFollow = async () => {
+    const getFollowerId = await SecureStore.getItemAsync("user_id"); // ambil id kita sekarang
+
+    if (!getFollowerId) {
+      Alert.alert(
+        "Failed to process your request",
+        "An error occurred while processing your request.",
+        [{ text: "OK" }]
+      );
+      console.log("Error getting user_id from SecureStore");
+      return;
+    }
+
+    const result = await followUser(getFollowerId, id);
+    console.log('selesai')
+
+    if (!result) {
+      Alert.alert(
+        "Failed to follow this user",
+        "An error occurred while processing your request.",
+        [{ text: "OK" }]
+      );
+      console.log("Error following user");
+      return;
+    }
+  };
 
   return (
     <SafeAreaView className="bg-white h-full w-full">
@@ -96,7 +124,9 @@ const UserProfile = () => {
                 size="md"
                 variant="solid"
                 action="primary"
-                onPress={() => {}}
+                onPress={() => {
+                  handleFollow();
+                }}
               >
                 <ButtonText
                   className="text-lg"

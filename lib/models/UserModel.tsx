@@ -11,7 +11,7 @@ export interface UserInputLogin {
   password: string;
 }
 
-//interface untuk fetch user data
+// interface untuk fetch user data
 export interface User {
   user_id: string;
   user_name: string;
@@ -23,7 +23,7 @@ export interface User {
   bio: string;
 }
 
-//interface untuk hasil search user
+// interface untuk hasil search user
 export interface UserSearch {
   user_id: string;
   user_name: string;
