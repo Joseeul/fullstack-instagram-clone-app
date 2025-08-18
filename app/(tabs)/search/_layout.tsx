@@ -18,6 +18,12 @@ const SearchLayout = () => {
           headerShown: false,
         }}
       />
+      <Stack.Screen
+        name="[id]"
+        options={{
+          title: "",
+        }}
+      />
     </Stack>
   );
 };

@@ -12,6 +12,7 @@ import { Search } from "lucide-react-native";
 import React, { useState } from "react";
 import {
   FlatList,
+  Pressable,
   SafeAreaView,
   Text,
   TextInput,
@@ -69,7 +70,14 @@ const SearchPage = () => {
           keyExtractor={(item) => item.user_id}
           renderItem={({ item }) =>
             isAvailable ? (
-              <TouchableOpacity>
+              <Pressable
+                onPress={() =>
+                  router.push({
+                    pathname: "/(tabs)/search/[id]",
+                    params: { id: item.user_id },
+                  })
+                }
+              >
                 <View className="mt-4 flex-row gap-4 items-center">
                   <Avatar size="md">
                     <AvatarFallbackText>Jane Doe</AvatarFallbackText>
@@ -83,7 +91,7 @@ const SearchPage = () => {
                     {item.user_name}
                   </Text>
                 </View>
-              </TouchableOpacity>
+              </Pressable>
             ) : (
               <Text
                 className="text-lg mt-4"
