@@ -1,34 +1,62 @@
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
-import { Button, ButtonText } from "@/components/ui/button";
+import { Button, ButtonSpinner, ButtonText } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
-import { fetchUserData, followUser } from "@/lib/api/database";
-import { checkIsFollow } from "@/lib/api/follow";
+import { fetchUserData } from "@/lib/api/database";
+import { checkIsFollow, followUser } from "@/lib/api/follow";
 import { userMapper } from "@/lib/mapping/userMapper";
 import { User } from "@/lib/models/UserModel";
 import { useLocalSearchParams } from "expo-router";
 import * as SecureStore from "expo-secure-store";
 import { Ellipsis } from "lucide-react-native";
 import React, { useEffect, useState } from "react";
-import { Alert, SafeAreaView, Text, View } from "react-native";
+import {
+  Alert,
+  RefreshControl,
+  SafeAreaView,
+  ScrollView,
+  Text,
+  View,
+} from "react-native";
 
 const UserProfile = () => {
   const { id } = useLocalSearchParams<{ id: string }>();
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoadingPage, setIsLoadingPage] = useState(true);
+  const [isLoadingIndicator, setIsLoadingIndicator] = useState(false);
   const [isFollow, setIsFollow] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
   const [user, setUser] = useState<User | null>(null);
 
-  let userA_id: any;
   const userB_id = id;
+
+  useEffect(() => {
+    const init = async () => {
+      await fetchUser();
+      await userFollowed();
+    };
+
+    init();
+  }, []);
+
+  const onRefresh = () => {
+    setRefreshing(true);
+    fetchUser();
+    userFollowed();
+    setTimeout(() => {
+      setRefreshing(false);
+    }, 2000);
+  };
 
   const fetchUser = async () => {
     const result = await fetchUserData(userB_id);
     const mappedUser = userMapper(result);
     setUser(mappedUser);
-    setIsLoading(false);
+    setIsLoadingPage(false);
   };
 
   const userFollowed = async () => {
+    const userA_id = (await SecureStore.getItemAsync("user_id")) as string;
     const result = await checkIsFollow({ userA_id, userB_id });
+
     if (result) {
       setIsFollow(true);
     } else {
@@ -36,21 +64,10 @@ const UserProfile = () => {
     }
   };
 
-  useEffect(() => {
-    const init = async () => {
-      const storedUserId = await SecureStore.getItemAsync("user_id");
-      userA_id = storedUserId;
-
-      await fetchUser();
-      await userFollowed();
-    };
-
-    init();
-  }, [isFollow]);
-
   const handleFollow = async () => {
-    const result = await followUser(userA_id, userB_id);
-    console.log("selesai");
+    setIsLoadingIndicator(true);
+    const userA_id = (await SecureStore.getItemAsync("user_id")) as string;
+    const result = await followUser({ userA_id, userB_id });
 
     if (!result) {
       Alert.alert(
@@ -59,114 +76,136 @@ const UserProfile = () => {
         [{ text: "OK" }]
       );
       console.log("Error following user");
+      setIsLoadingIndicator(false);
       return;
     }
+    setIsLoadingIndicator(false);
   };
 
   return (
     <SafeAreaView className="bg-white h-full w-full">
-      {isLoading ? (
-        <View className="flex-1 justify-center items-center">
-          <Spinner size="large" />
-        </View>
-      ) : (
-        <View className="p-5">
-          <View className="flex-row justify-between items-center">
-            <View className="flex-row gap-3 items-center">
-              <Text className="text-3xl" style={{ fontFamily: "Ig-Bold" }}>
-                {user?.user_name}
-              </Text>
-            </View>
-            <View className="flex-row">
-              <Ellipsis />
-            </View>
+      <ScrollView
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+      >
+        {isLoadingPage ? (
+          <View className="flex-1 justify-center items-center">
+            <Spinner size="large" />
           </View>
-          <View className="flex-row mt-8 items-center">
-            <Avatar size="xl" className="mr-8">
-              <AvatarImage
-                source={{
-                  uri: user?.avatar_url,
-                }}
-              />
-            </Avatar>
-            <View className="flex-row gap-11">
-              <View>
-                <Text className="text-xl" style={{ fontFamily: "Ig-Bold" }}>
-                  {user?.total_post}
-                </Text>
-                <Text className="text-lg" style={{ fontFamily: "Ig-Regular" }}>
-                  posts
+        ) : (
+          <View className="p-5">
+            <View className="flex-row justify-between items-center">
+              <View className="flex-row gap-3 items-center">
+                <Text className="text-3xl" style={{ fontFamily: "Ig-Bold" }}>
+                  {user?.user_name}
                 </Text>
               </View>
-              <View>
-                <Text className="text-xl" style={{ fontFamily: "Ig-Bold" }}>
-                  {user?.total_followers}
-                </Text>
-                <Text className="text-lg" style={{ fontFamily: "Ig-Regular" }}>
-                  followers
-                </Text>
-              </View>
-              <View>
-                <Text className="text-xl" style={{ fontFamily: "Ig-Bold" }}>
-                  {user?.total_following}
-                </Text>
-                <Text className="text-lg" style={{ fontFamily: "Ig-Regular" }}>
-                  following
-                </Text>
+              <View className="flex-row">
+                <Ellipsis />
               </View>
             </View>
-          </View>
-          <View className="mt-6 w-full">
-            <Text style={{ fontFamily: "Ig-Regular" }}>{user?.bio}</Text>
-            <View className="flex-row w-full space-x-2 gap-4 mt-4">
-              <Button
-                className="flex-1 rounded-lg"
-                size="md"
-                variant="solid"
-                action="primary"
-                onPress={() => {
-                  handleFollow();
-                }}
-              >
-                {isFollow ? (
-                  <ButtonText
+            <View className="flex-row mt-8 items-center">
+              <Avatar size="xl" className="mr-8">
+                <AvatarImage
+                  source={{
+                    uri: user?.avatar_url,
+                  }}
+                />
+              </Avatar>
+              <View className="flex-row gap-11">
+                <View>
+                  <Text className="text-xl" style={{ fontFamily: "Ig-Bold" }}>
+                    {user?.total_post}
+                  </Text>
+                  <Text
                     className="text-lg"
-                    style={{
-                      fontFamily: "Ig-Bold",
-                    }}
+                    style={{ fontFamily: "Ig-Regular" }}
                   >
-                    Following
-                  </ButtonText>
-                ) : (
-                  <ButtonText
+                    posts
+                  </Text>
+                </View>
+                <View>
+                  <Text className="text-xl" style={{ fontFamily: "Ig-Bold" }}>
+                    {user?.total_followers}
+                  </Text>
+                  <Text
                     className="text-lg"
-                    style={{
-                      fontFamily: "Ig-Bold",
-                    }}
+                    style={{ fontFamily: "Ig-Regular" }}
                   >
-                    Follow
-                  </ButtonText>
-                )}
-              </Button>
-              <Button
-                className="flex-1 rounded-lg"
-                size="md"
-                variant="solid"
-                action="primary"
-              >
-                <ButtonText
-                  className="text-lg"
-                  style={{
-                    fontFamily: "Ig-Bold",
+                    followers
+                  </Text>
+                </View>
+                <View>
+                  <Text className="text-xl" style={{ fontFamily: "Ig-Bold" }}>
+                    {user?.total_following}
+                  </Text>
+                  <Text
+                    className="text-lg"
+                    style={{ fontFamily: "Ig-Regular" }}
+                  >
+                    following
+                  </Text>
+                </View>
+              </View>
+            </View>
+            <View className="mt-6 w-full">
+              <Text style={{ fontFamily: "Ig-Regular" }}>{user?.bio}</Text>
+              <View className="flex-row w-full space-x-2 gap-4 mt-4">
+                <Button
+                  className="flex-1 rounded-lg"
+                  size="md"
+                  variant="solid"
+                  action="primary"
+                  onPress={() => {
+                    handleFollow();
                   }}
                 >
-                  Message
-                </ButtonText>
-              </Button>
+                  {isLoadingIndicator ? (
+                    <ButtonSpinner color={"#FFFFFF"} />
+                  ) : (
+                    ""
+                  )}
+                  {isFollow ? (
+                    <ButtonText
+                      className="text-lg"
+                      style={{
+                        fontFamily: "Ig-Bold",
+                      }}
+                    >
+                      Following
+                    </ButtonText>
+                  ) : (
+                    <ButtonText
+                      className="text-lg"
+                      style={{
+                        fontFamily: "Ig-Bold",
+                      }}
+                    >
+                      Follow
+                    </ButtonText>
+                  )}
+                </Button>
+                <Button
+                  className="flex-1 rounded-lg"
+                  size="md"
+                  variant="solid"
+                  action="primary"
+                >
+                  <ButtonText
+                    className="text-lg"
+                    style={{
+                      fontFamily: "Ig-Bold",
+                    }}
+                  >
+                    Message
+                  </ButtonText>
+                </Button>
+              </View>
             </View>
           </View>
-        </View>
-      )}
+        )}
+      </ScrollView>
     </SafeAreaView>
   );
 };
