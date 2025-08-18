@@ -29,3 +29,9 @@ export interface UserSearch {
   user_name: string;
   avatar_url: string;
 }
+
+// interface untuk system follow
+export interface FollowUser {
+  userA_id: string;
+  userB_id: string;
+}

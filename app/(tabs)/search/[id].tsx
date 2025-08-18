@@ -2,6 +2,7 @@ import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { Button, ButtonText } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 import { fetchUserData, followUser } from "@/lib/api/database";
+import { checkIsFollow } from "@/lib/api/follow";
 import { userMapper } from "@/lib/mapping/userMapper";
 import { User } from "@/lib/models/UserModel";
 import { useLocalSearchParams } from "expo-router";
@@ -12,45 +13,44 @@ import { Alert, SafeAreaView, Text, View } from "react-native";
 
 const UserProfile = () => {
   const { id } = useLocalSearchParams<{ id: string }>();
-
   const [isLoading, setIsLoading] = useState(true);
+  const [isFollow, setIsFollow] = useState(false);
   const [user, setUser] = useState<User | null>(null);
 
-  useEffect(() => {
-    const fetchUser = async () => {
-      if (!id) {
-        Alert.alert(
-          "Failed to get user data",
-          "An error occurred while processing your request.",
-          [{ text: "Retry", onPress: () => fetchUser() }]
-        );
-        console.log("Error getting user_id from SecureStore");
-        return;
-      }
+  let userA_id: any;
+  const userB_id = id;
 
-      const result = await fetchUserData(id);
-      const mappedUser = userMapper(result);
-      setUser(mappedUser);
-      setIsLoading(false);
+  const fetchUser = async () => {
+    const result = await fetchUserData(userB_id);
+    const mappedUser = userMapper(result);
+    setUser(mappedUser);
+    setIsLoading(false);
+  };
+
+  const userFollowed = async () => {
+    const result = await checkIsFollow({ userA_id, userB_id });
+    if (result) {
+      setIsFollow(true);
+    } else {
+      setIsFollow(false);
+    }
+  };
+
+  useEffect(() => {
+    const init = async () => {
+      const storedUserId = await SecureStore.getItemAsync("user_id");
+      userA_id = storedUserId;
+
+      await fetchUser();
+      await userFollowed();
     };
-    fetchUser();
-  }, []);
+
+    init();
+  }, [isFollow]);
 
   const handleFollow = async () => {
-    const getFollowerId = await SecureStore.getItemAsync("user_id"); // ambil id kita sekarang
-
-    if (!getFollowerId) {
-      Alert.alert(
-        "Failed to process your request",
-        "An error occurred while processing your request.",
-        [{ text: "OK" }]
-      );
-      console.log("Error getting user_id from SecureStore");
-      return;
-    }
-
-    const result = await followUser(getFollowerId, id);
-    console.log('selesai')
+    const result = await followUser(userA_id, userB_id);
+    console.log("selesai");
 
     if (!result) {
       Alert.alert(
@@ -128,14 +128,25 @@ const UserProfile = () => {
                   handleFollow();
                 }}
               >
-                <ButtonText
-                  className="text-lg"
-                  style={{
-                    fontFamily: "Ig-Bold",
-                  }}
-                >
-                  Follow
-                </ButtonText>
+                {isFollow ? (
+                  <ButtonText
+                    className="text-lg"
+                    style={{
+                      fontFamily: "Ig-Bold",
+                    }}
+                  >
+                    Following
+                  </ButtonText>
+                ) : (
+                  <ButtonText
+                    className="text-lg"
+                    style={{
+                      fontFamily: "Ig-Bold",
+                    }}
+                  >
+                    Follow
+                  </ButtonText>
+                )}
               </Button>
               <Button
                 className="flex-1 rounded-lg"
