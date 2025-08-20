@@ -197,42 +197,29 @@ export const showFollowingList = async (userA_id: string) => {
   const followingList = await getFollowingList(userA_id);
   if (!followingList) return false;
 
-  const documentId = followingList.documents.map((doc) => doc.$id);
+  const followingDocumentIdList = followingList.documents.map((doc) => doc.$id);
 
   const followingDocuments = await Promise.all(
-    documentId.map(async (id) => {
-      return await databases.getDocument(
-        appwriteConfig.databaseId,
-        appwriteConfig.followCollectionId,
-        id
-      );
+    followingDocumentIdList.map(async (id) => {
+      return await getFollowingDocument(id);
     })
   );
 
-  const followingId = followingDocuments.map((doc) => doc.following_id);
+  const followingId = followingDocuments.map((doc) => doc!.following_id);
 
-
-  const userList = await Promise.all(
+  const documentUserList = await Promise.all(
     followingId.map(async (id) => {
-      return await databases.listDocuments(
-        appwriteConfig.databaseId,
-        appwriteConfig.userCollectionId,
-        [Query.equal("user_id", id)]
-      );
+      return await getDocumentUserList(id);
     })
   );
 
-  const userDocumentId = userList.flatMap((result) =>
-    result.documents.map((doc) => doc.$id)
+  const userDocumentId = documentUserList.flatMap((result) =>
+    result!.documents.map((doc) => doc.$id)
   );
 
   const user = await Promise.all(
     userDocumentId.map(async (id) => {
-      return await databases.getDocument(
-        appwriteConfig.databaseId,
-        appwriteConfig.userCollectionId,
-        id
-      );
+      return await getUser(id);
     })
   );
 
@@ -247,6 +234,48 @@ const getFollowingList = async (userA_id: string) => {
       [Query.equal("follower_id", userA_id)]
     );
     return followingList;
+  } catch (error) {
+    console.error(error);
+    return;
+  }
+};
+
+const getFollowingDocument = async (id: string) => {
+  try {
+    const followingDocument = await databases.getDocument(
+      appwriteConfig.databaseId,
+      appwriteConfig.followCollectionId,
+      id
+    );
+    return followingDocument;
+  } catch (error) {
+    console.error(error);
+    return;
+  }
+};
+
+const getDocumentUserList = async (id: string) => {
+  try {
+    const documentUserList = await databases.listDocuments(
+      appwriteConfig.databaseId,
+      appwriteConfig.userCollectionId,
+      [Query.equal("user_id", id)]
+    );
+    return documentUserList;
+  } catch (error) {
+    console.error(error);
+    return;
+  }
+};
+
+const getUser = async (id: string) => {
+  try {
+    const user = await databases.getDocument(
+      appwriteConfig.databaseId,
+      appwriteConfig.userCollectionId,
+      id
+    );
+    return user;
   } catch (error) {
     console.error(error);
     return;
