@@ -1,19 +1,16 @@
-import {
-  Avatar,
-  AvatarFallbackText,
-  AvatarImage,
-} from "@/components/ui/avatar";
+import { Avatar, AvatarImage } from "@/components/ui/avatar";
+import { Spinner } from "@/components/ui/spinner";
 import { showFollowingList } from "@/lib/api/follow";
 import { followingMapper } from "@/lib/mapping/userMapper";
-import { UserSearch } from "@/lib/models/UserModel";
+import { UserFollowingList } from "@/lib/models/UserModel";
 import { router } from "expo-router";
 import * as SecureStore from "expo-secure-store";
 import React, { useEffect, useState } from "react";
 import { FlatList, Pressable, SafeAreaView, Text, View } from "react-native";
 
 const FollowingList = () => {
-  const [user, setUser] = useState<UserSearch[]>([]);
-  const [isAvailable, setIsAvailable] = useState(true);
+  const [user, setUser] = useState<UserFollowingList[]>();
+  const [isloading, setIsLoading] = useState(true);
 
   useEffect(() => {
     fetchFollowing();
@@ -24,49 +21,60 @@ const FollowingList = () => {
     const result = await showFollowingList(userA_id);
 
     if (!result) {
+      setIsLoading(false);
       return;
     }
 
     const mappedUser = result.map(followingMapper);
     setUser(mappedUser);
+    setIsLoading(false);
   };
 
   return (
     <SafeAreaView className="bg-white h-full w-full">
-      <FlatList
-        data={user}
-        keyExtractor={(item) => item.user_id}
-        renderItem={({ item }) =>
-          isAvailable ? (
-            <Pressable
-              onPress={() =>
-                router.push({
-                  pathname: "/(tabs)/search/[id]",
-                  params: { id: item.user_id },
-                })
-              }
-            >
-              <View className="mt-4 flex-row gap-4 items-center">
-                <Avatar size="md">
-                  <AvatarFallbackText>Jane Doe</AvatarFallbackText>
-                  <AvatarImage
-                    source={{
-                      uri: item.avatar_url,
-                    }}
-                  />
-                </Avatar>
-                <Text className="text-lg" style={{ fontFamily: "Ig-Medium" }}>
-                  {item.user_name}
-                </Text>
-              </View>
-            </Pressable>
-          ) : (
-            <Text className="text-lg mt-4" style={{ fontFamily: "Ig-Medium" }}>
-              User not found.
-            </Text>
-          )
-        }
-      />
+      <View className="p-5">
+        {isloading ? (
+          <View className="flex-1 justify-center items-center">
+            <Spinner size="large" />
+          </View>
+        ) : (
+          <FlatList
+            data={user}
+            keyExtractor={(item) => item.user_id}
+            ListEmptyComponent={
+              <Text
+                className="text-lg mt-4"
+                style={{ fontFamily: "Ig-Medium" }}
+              >
+                You’re not following anyone yet.
+              </Text>
+            }
+            renderItem={({ item }) => (
+              <Pressable
+                onPress={() =>
+                  router.push({
+                    pathname: '/(tabs)/profile/[id]',
+                    params: { id: item.user_id },
+                  })
+                }
+              >
+                <View className="mt-4 flex-row gap-4 items-center">
+                  <Avatar size="md">
+                    <AvatarImage
+                      source={{
+                        uri: item.avatar_url,
+                      }}
+                    />
+                  </Avatar>
+                  <Text className="text-lg" style={{ fontFamily: "Ig-Medium" }}>
+                    {item.user_name}
+                  </Text>
+                </View>
+              </Pressable>
+            )}
+          />
+        )}
+      </View>
     </SafeAreaView>
   );
 };

@@ -1,4 +1,4 @@
-import { FollowingList, User, UserSearch } from "../models/UserModel";
+import { User, UserFollowerList, UserFollowingList, UserSearch } from "../models/UserModel";
 
 export const userMapper = (doc: any): User => ({
   user_id: doc.user_id,
@@ -17,7 +17,13 @@ export const searchMapper = (doc: any): UserSearch => ({
   avatar_url: doc.avatar_url,
 });
 
-export const followingMapper = (doc: any): FollowingList => ({
+export const followingMapper = (doc: any): UserFollowingList => ({
+  user_id: doc.user_id,
+  user_name: doc.user_name,
+  avatar_url: doc.avatar_url,
+});
+
+export const followerMapper = (doc: any): UserFollowerList => ({
   user_id: doc.user_id,
   user_name: doc.user_name,
   avatar_url: doc.avatar_url,

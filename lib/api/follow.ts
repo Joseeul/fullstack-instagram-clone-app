@@ -66,6 +66,74 @@ export const followUser = async ({ userA_id, userB_id }: FollowUser) => {
   return true;
 };
 
+// function untuk menampilkan following list (MASTER FUNCTION)
+export const showFollowingList = async (userA_id: string) => {
+  const followingList = await getFollowingList(userA_id);
+  if (!followingList) return false;
+
+  const followingDocumentIdList = followingList.documents.map((doc) => doc.$id);
+
+  const followingDocuments = await Promise.all(
+    followingDocumentIdList.map(async (id) => {
+      return await getFollowingDocument(id);
+    })
+  );
+
+  const followingId = followingDocuments.map((doc) => doc!.following_id);
+
+  const documentUserList = await Promise.all(
+    followingId.map(async (id) => {
+      return await getDocumentUserList(id);
+    })
+  );
+
+  const userDocumentId = documentUserList.flatMap((result) =>
+    result!.documents.map((doc) => doc.$id)
+  );
+
+  const user = await Promise.all(
+    userDocumentId.map(async (id) => {
+      return await getUser(id);
+    })
+  );
+
+  return user;
+};
+
+// function untuk menampilkan follower list (MASTER FUNCTION)
+export const showFollowerList = async (userA_id: string) => {
+  const followerList = await getFollowerList(userA_id);
+  if (!followerList) return false;
+
+  const followerDocumentIdList = followerList.documents.map((doc) => doc.$id);
+
+  const followerDocuments = await Promise.all(
+    followerDocumentIdList.map(async (id) => {
+      return await getFollowingDocument(id);
+    })
+  );
+
+  const followerId = followerDocuments.map((doc) => doc!.follower_id);
+
+  const documentUserList = await Promise.all(
+    followerId.map(async (id) => {
+      return await getDocumentUserList(id);
+    })
+  );
+
+  const userDocumentId = documentUserList.flatMap((result) =>
+    result!.documents.map((doc) => doc.$id)
+  );
+
+  const user = await Promise.all(
+    userDocumentId.map(async (id) => {
+      return await getUser(id);
+    })
+  );
+
+  return user;
+};
+
 const inputFollowCollection = async (userA_id: string, userB_id: string) => {
   try {
     await databases.createDocument(
@@ -192,46 +260,26 @@ const updateFollowUserB = async (userB_id: string) => {
   }
 };
 
-// function untuk menampilkan following list
-export const showFollowingList = async (userA_id: string) => {
-  const followingList = await getFollowingList(userA_id);
-  if (!followingList) return false;
-
-  const followingDocumentIdList = followingList.documents.map((doc) => doc.$id);
-
-  const followingDocuments = await Promise.all(
-    followingDocumentIdList.map(async (id) => {
-      return await getFollowingDocument(id);
-    })
-  );
-
-  const followingId = followingDocuments.map((doc) => doc!.following_id);
-
-  const documentUserList = await Promise.all(
-    followingId.map(async (id) => {
-      return await getDocumentUserList(id);
-    })
-  );
-
-  const userDocumentId = documentUserList.flatMap((result) =>
-    result!.documents.map((doc) => doc.$id)
-  );
-
-  const user = await Promise.all(
-    userDocumentId.map(async (id) => {
-      return await getUser(id);
-    })
-  );
-
-  return user;
-};
-
 const getFollowingList = async (userA_id: string) => {
   try {
     const followingList = await databases.listDocuments(
       appwriteConfig.databaseId,
       appwriteConfig.followCollectionId,
       [Query.equal("follower_id", userA_id)]
+    );
+    return followingList;
+  } catch (error) {
+    console.error(error);
+    return;
+  }
+};
+
+const getFollowerList = async (userA_id: string) => {
+  try {
+    const followingList = await databases.listDocuments(
+      appwriteConfig.databaseId,
+      appwriteConfig.followCollectionId,
+      [Query.equal("following_id", userA_id)]
     );
     return followingList;
   } catch (error) {

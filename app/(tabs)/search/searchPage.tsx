@@ -24,7 +24,6 @@ const SearchPage = () => {
   const router = useRouter();
 
   const [user, setUser] = useState<UserSearch[]>([]);
-  const [isAvailable, setIsAvailable] = useState(false);
 
   const handleSearch = debounce(async (text: string) => {
     if (!text.trim()) {
@@ -34,18 +33,11 @@ const SearchPage = () => {
     const result = await searchUser(text);
 
     if (!result) {
-      setIsAvailable(false);
-      return;
-    }
-
-    if (result.length === 0) {
-      setIsAvailable(false);
       return;
     }
 
     const mappedSearch = result.map(searchMapper);
     setUser(mappedSearch);
-    setIsAvailable(true);
   }, 1000);
 
   return (
@@ -68,39 +60,35 @@ const SearchPage = () => {
         <FlatList
           data={user}
           keyExtractor={(item) => item.user_id}
-          renderItem={({ item }) =>
-            isAvailable ? (
-              <Pressable
-                onPress={() =>
-                  router.push({
-                    pathname: "/(tabs)/search/[id]",
-                    params: { id: item.user_id },
-                  })
-                }
-              >
-                <View className="mt-4 flex-row gap-4 items-center">
-                  <Avatar size="md">
-                    <AvatarFallbackText>Jane Doe</AvatarFallbackText>
-                    <AvatarImage
-                      source={{
-                        uri: item.avatar_url,
-                      }}
-                    />
-                  </Avatar>
-                  <Text className="text-lg" style={{ fontFamily: "Ig-Medium" }}>
-                    {item.user_name}
-                  </Text>
-                </View>
-              </Pressable>
-            ) : (
-              <Text
-                className="text-lg mt-4"
-                style={{ fontFamily: "Ig-Medium" }}
-              >
-                User not found.
-              </Text>
-            )
+          ListEmptyComponent={
+            <Text className="text-lg mt-4" style={{ fontFamily: "Ig-Medium" }}>
+              User not found.
+            </Text>
           }
+          renderItem={({ item }) => (
+            <Pressable
+              onPress={() =>
+                router.push({
+                  pathname: "/(tabs)/search/[id]",
+                  params: { id: item.user_id },
+                })
+              }
+            >
+              <View className="mt-4 flex-row gap-4 items-center">
+                <Avatar size="md">
+                  <AvatarFallbackText>Jane Doe</AvatarFallbackText>
+                  <AvatarImage
+                    source={{
+                      uri: item.avatar_url,
+                    }}
+                  />
+                </Avatar>
+                <Text className="text-lg" style={{ fontFamily: "Ig-Medium" }}>
+                  {item.user_name}
+                </Text>
+              </View>
+            </Pressable>
+          )}
         />
       </View>
     </SafeAreaView>

@@ -37,7 +37,14 @@ export interface FollowUser {
 }
 
 // interface untuk following list
-export interface FollowingList {
+export interface UserFollowingList {
+  user_id: string;
+  user_name: string;
+  avatar_url: string;
+}
+
+// interface untuk follower list
+export interface UserFollowerList {
   user_id: string;
   user_name: string;
   avatar_url: string;

@@ -35,6 +35,12 @@ const ProfileLayout = () => {
           title: "Follower",
         }}
       />
+      <Stack.Screen
+        name="[id]"
+        options={{
+          title: "",
+        }}
+      />
     </Stack>
   );
 };
