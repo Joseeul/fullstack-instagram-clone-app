@@ -23,6 +23,18 @@ const ProfileLayout = () => {
           title: "Settings and activity",
         }}
       />
+      <Stack.Screen
+        name="followingList"
+        options={{
+          title: "Following",
+        }}
+      />
+      <Stack.Screen
+        name="followerList"
+        options={{
+          title: "Follower",
+        }}
+      />
     </Stack>
   );
 };

@@ -16,3 +16,9 @@ export const searchMapper = (doc: any): UserSearch => ({
   user_name: doc.user_name,
   avatar_url: doc.avatar_url,
 });
+
+export const followingMapper = (doc: any): UserSearch => ({
+  user_id: doc.user_id,
+  user_name: doc.user_name,
+  avatar_url: doc.avatar_url,
+});

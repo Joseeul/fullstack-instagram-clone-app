@@ -191,3 +191,64 @@ const updateFollowUserB = async (userB_id: string) => {
     return;
   }
 };
+
+// function untuk menampilkan following list
+export const showFollowingList = async (userA_id: string) => {
+  const followingList = await getFollowingList(userA_id);
+  if (!followingList) return false;
+
+  const documentId = followingList.documents.map((doc) => doc.$id);
+
+  const followingDocuments = await Promise.all(
+    documentId.map(async (id) => {
+      return await databases.getDocument(
+        appwriteConfig.databaseId,
+        appwriteConfig.followCollectionId,
+        id
+      );
+    })
+  );
+
+  const followingId = followingDocuments.map((doc) => doc.following_id);
+
+
+  const userList = await Promise.all(
+    followingId.map(async (id) => {
+      return await databases.listDocuments(
+        appwriteConfig.databaseId,
+        appwriteConfig.userCollectionId,
+        [Query.equal("user_id", id)]
+      );
+    })
+  );
+
+  const userDocumentId = userList.flatMap((result) =>
+    result.documents.map((doc) => doc.$id)
+  );
+
+  const user = await Promise.all(
+    userDocumentId.map(async (id) => {
+      return await databases.getDocument(
+        appwriteConfig.databaseId,
+        appwriteConfig.userCollectionId,
+        id
+      );
+    })
+  );
+
+  return user;
+};
+
+const getFollowingList = async (userA_id: string) => {
+  try {
+    const followingList = await databases.listDocuments(
+      appwriteConfig.databaseId,
+      appwriteConfig.followCollectionId,
+      [Query.equal("follower_id", userA_id)]
+    );
+    return followingList;
+  } catch (error) {
+    console.error(error);
+    return;
+  }
+};

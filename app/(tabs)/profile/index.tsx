@@ -10,6 +10,7 @@ import { Blend, ChevronDown, Menu, SquarePlus } from "lucide-react-native";
 import React, { useEffect, useState } from "react";
 import {
   Alert,
+  Pressable,
   RefreshControl,
   SafeAreaView,
   ScrollView,
@@ -107,7 +108,9 @@ const Index = () => {
                     posts
                   </Text>
                 </View>
-                <View>
+                <Pressable
+                  onPress={() => router.push("/(tabs)/profile/followerList")}
+                >
                   <Text className="text-xl" style={{ fontFamily: "Ig-Bold" }}>
                     {user?.total_followers}
                   </Text>
@@ -117,8 +120,10 @@ const Index = () => {
                   >
                     followers
                   </Text>
-                </View>
-                <View>
+                </Pressable>
+                <Pressable
+                  onPress={() => router.push("/(tabs)/profile/followingList")}
+                >
                   <Text className="text-xl" style={{ fontFamily: "Ig-Bold" }}>
                     {user?.total_following}
                   </Text>
@@ -128,7 +133,7 @@ const Index = () => {
                   >
                     following
                   </Text>
-                </View>
+                </Pressable>
               </View>
             </View>
             <View className="mt-6 w-full">
