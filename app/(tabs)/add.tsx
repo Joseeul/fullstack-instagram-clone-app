@@ -5,25 +5,18 @@ import { PostInput } from "@/lib/models/PostModel";
 import * as ImagePicker from "expo-image-picker";
 import * as SecureStore from "expo-secure-store";
 import React, { useEffect, useState } from "react";
-import { Image, SafeAreaView, Text, View } from "react-native";
+import { Alert, Image, SafeAreaView, Text, View } from "react-native";
 
 const Add = () => {
-  const [image, setImage] = useState<PostInput>({
-    author_id: "",
-    description: "",
-    name: "",
-    type: "",
-    size: 0,
-    uri: "",
-  });
+  const [image, setImage] = useState<PostInput>();
   const [isAvailable, setIsAvailable] = useState(false);
   const [description, setDescription] = useState("");
-
-  let userId: string;
+  const [userId, setUserId] = useState("");
 
   useEffect(() => {
     const getUserId = async () => {
-      userId = (await SecureStore.getItemAsync("user_id")) as string;
+      const getUserId = (await SecureStore.getItemAsync("user_id")) as string;
+      setUserId(getUserId);
     };
     getUserId();
   }, []);
@@ -39,7 +32,7 @@ const Add = () => {
       const asset = result.assets[0];
       setImage({
         author_id: userId,
-        description: description,
+        description,
         name: asset.fileName || "uknown",
         type: asset.mimeType || "image/jpeg",
         size: asset.fileSize || 0,
@@ -50,6 +43,14 @@ const Add = () => {
   };
 
   const handleImage = async () => {
+    if (!image) {
+      Alert.alert("Failed to upload", "No image found!", [{ text: "OK" }]);
+      return;
+    }
+    if (!description.trim()) {
+      Alert.alert("Empty field", "No description detected", [{ text: "OK" }]);
+      return;
+    }
     const result = await uploadImage(image);
   };
 
@@ -59,22 +60,15 @@ const Add = () => {
         {isAvailable ? (
           <Image
             source={
-              image.uri ? { uri: image.uri } : require("assets/images/icon.png")
+              image?.uri
+                ? { uri: image.uri }
+                : require("assets/images/icon.png")
             }
             className="w-[400] h-[400]"
           />
         ) : (
           <Text className="text-center">No image selected</Text>
         )}
-        <Button
-          size="md"
-          variant="solid"
-          action="primary"
-          onPress={pickImage}
-          className="mt-4"
-        >
-          <ButtonText>Select an image</ButtonText>
-        </Button>
         <Input
           variant="outline"
           size="lg"
@@ -85,9 +79,19 @@ const Add = () => {
         >
           <InputField
             placeholder="Input description"
-            onChangeText={setDescription}
+            onChangeText={(text) => setDescription(text)}
           />
         </Input>
+        <Button
+          size="md"
+          variant="solid"
+          action="primary"
+          onPress={pickImage}
+          className="mt-4"
+        >
+          <ButtonText>Select an image</ButtonText>
+        </Button>
+
         <Button
           size="md"
           variant="solid"

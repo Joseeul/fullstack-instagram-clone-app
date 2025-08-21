@@ -2,16 +2,10 @@
 export interface PostInput {
   author_id: string;
   description: string;
+  image_url?: string;
+  image_id?: string;
   name: string;
   type: string;
   size: number;
   uri: string;
-}
-
-//interface untuk input data ke document
-export interface PostDocumentInput {
-  author_id: string;
-  description: string;
-  image_url: string;
-  image_id: string;
 }
